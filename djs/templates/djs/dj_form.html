@@ -1,0 +1,15 @@
+{% extends 'djs/base.html' %}
+
+{% block title %}{% if mode == 'create' %}Agregar DJ{% else %}Editar DJ{% endif %}{% endblock %}
+
+{% block content %}
+    <div class="card detalle">
+        <h1>{% if mode == 'create' %}🎧 Agregar DJ{% else %}✏️ Editar {{ dj.nombre }}{% endif %}</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar</button>
+            <a href="{% url 'djs:dj_list' %}">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

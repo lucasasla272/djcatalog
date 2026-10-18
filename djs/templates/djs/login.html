@@ -1,0 +1,15 @@
+{% extends 'djs/base.html' %}
+
+{% block title %}Login | Catálogo de DJs{% endblock %}
+
+{% block content %}
+    <div class="card detalle">
+        <h1>🔐 Iniciar sesión</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Entrar</button>
+        </form>
+        <p style="margin-top: 12px; color: #999;">Listado y detalle son públicos. El login solo hace falta para agregar, editar o eliminar.</p>
+    </div>
+{% endblock %}

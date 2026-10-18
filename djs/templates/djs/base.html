@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Catálogo de DJs{% endblock %}</title>
+    <style>
+        :root {
+            --fondo: #0d0d14;
+            --tarjeta: #1a1a26;
+            --texto: #e8e8f0;
+            --acento: #b46bff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--fondo);
+            color: var(--texto);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            padding: 16px 24px;
+            background: var(--tarjeta);
+        }
+
+        nav a {
+            color: var(--acento);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        main {
+            flex: 1;
+            padding: 32px 24px;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        footer {
+            padding: 16px 24px;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .card {
+            background: var(--tarjeta);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform .15s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card a {
+            color: var(--acento);
+            text-decoration: none;
+            font-size: 1.15rem;
+            font-weight: bold;
+        }
+
+        .card .meta {
+            color: #999;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        h1 {
+            margin: 16px 0 8px;
+        }
+
+        .detalle {
+            max-width: 560px;
+        }
+
+        .detalle p {
+            margin: 10px 0;
+        }
+
+        .detalle a {
+            color: var(--acento);
+        }
+
+        .mensajes {
+            margin: 16px 0;
+        }
+
+        .msg-success {
+            background: #1e3d2f;
+            color: #7ee2a8;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .msg-error {
+            background: #3d1e1e;
+            color: #e27e7e;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.95rem;
+        }
+
+        .hola {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .logout-form {
+            display: inline;
+        }
+
+        .logout-form button {
+            background: none;
+            border: none;
+            color: var(--acento);
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 0;
+        }
+
+        button {
+            background: var(--acento);
+            color: #0d0d14;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .card a {
+            color: var(--acento);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .hola {
+            color: #999;
+            font-size: 0.9rem;
+            border-right: 1px solid #333;
+            padding-right: 16px;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filtros input,
+        .filtros select {
+            background: var(--tarjeta);
+            color: var(--texto);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+
+        .filtros button {
+            margin-top: 0;
+        }
+
+        .filtros a {
+            color: #999;
+        }
+
+        .resultados {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+
+        .orden {
+            display: flex;
+            gap: 12px;
+            margin-top: 14px;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .orden a {
+            color: #999;
+            text-decoration: none;
+        }
+
+        .orden a:hover {
+            color: var(--texto);
+        }
+
+        .orden a.activo {
+            color: var(--acento);
+            font-weight: bold;
+        }
+
+        .paginacion {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+            justify-content: center;
+        }
+
+        .paginacion a {
+            color: var(--acento);
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="{% url 'djs:dj_list' %}">🎧 Catálogo de DJs</a>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+            <span class="hola">Hola, {{ user.username.capitalize }}</span>
+            <a href="{% url 'djs:dj_list' %}">Listado</a>
+            <a href="{% url 'djs:dj_create' %}">+ Agregar DJ</a>
+            <form method="post" action="{% url 'djs:logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit">Salir</button>
+            </form>
+            {% else %}
+            <a href="{% url 'djs:dj_list' %}">Listado</a>
+            <a href="{% url 'djs:login' %}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main>
+        {% if messages %}
+        <div class="mensajes">
+            {% for message in messages %}
+            <p class="msg-{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>Proyecto de portfolio — Django</footer>
+</body>
+
+</html>
