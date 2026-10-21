@@ -4,30 +4,36 @@
 
 {% block content %}
     <h1>🎧 DJs</h1>
-    <form method="get" class="filtros">
-        <div class="orden">
-    <span>Ordenar por:</span>
-    {% for clave, etiqueta in ordenes.items %}
-        <a href="?q={{ q }}&estilo={{ estilo }}&order={{ clave }}&dir={% if order == clave and dir != 'desc' %}desc{% else %}asc{% endif %}"
-           class="{% if order == clave %}activo{% endif %}">
-            {{ etiqueta }}{% if order == clave %} {% if dir == 'desc' %}↓{% else %}↑{% endif %}{% endif %}
-        </a>
-    {% endfor %}
-</div>
-    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre o país...">
-    <select name="estilo">
-        <option value="">Todos los estilos</option>
-        {% for e in estilos %}
-            <option value="{{ e }}" {% if e == estilo %}selected{% endif %}>{{ e }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit">Buscar</button>
-    {% if q or estilo %}
-        <a href="{% url 'djs:dj_list' %}">✖ Limpiar filtros</a>
-    {% endif %}
-</form>
 
-<p class="resultados">{{ page_obj.paginator.count }} DJ(s) · Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</p>
+    <form method="get" class="filtros">
+        <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre o país...">
+        <select name="estilo">
+            <option value="">Todos los estilos</option>
+            {% for e in estilos %}
+                <option value="{{ e }}" {% if e == estilo %}selected{% endif %}>{{ e }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Buscar</button>
+        {% if q or estilo %}
+            <a href="{% url 'djs:dj_list' %}">✖ Limpiar filtros</a>
+        {% endif %}
+    </form>
+
+    <div class="orden">
+        <span>Ordenar por:</span>
+        {% for clave, etiqueta in ordenes.items %}
+            {% if order == clave and dir == 'desc' %}
+                <a href="{% querystring order=clave dir='asc' page=None %}" class="activo">{{ etiqueta }} ↓</a>
+            {% elif order == clave %}
+                <a href="{% querystring order=clave dir='desc' page=None %}" class="activo">{{ etiqueta }} ↑</a>
+            {% else %}
+                <a href="{% querystring order=clave dir='asc' page=None %}">{{ etiqueta }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <p class="resultados">{{ page_obj.paginator.count }} DJ(s) · Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</p>
+
     <div class="grid">
         {% for dj in page_obj %}
             <div class="card">
@@ -38,13 +44,14 @@
             <p>No hay DJs que coincidan con la búsqueda.</p>
         {% endfor %}
     </div>
+
     {% if page_obj.has_other_pages %}
         <div class="paginacion">
             {% if page_obj.has_previous %}
-                <a href="?q={{ q }}&estilo={{ estilo }}&order={{ order }}&dir={{ dir }}&page={{ page_obj.previous_page_number }}">← Anterior</a>
+                <a href="{% querystring page=page_obj.previous_page_number %}">← Anterior</a>
             {% endif %}
             {% if page_obj.has_next %}
-                <a href="?q={{ q }}&estilo={{ estilo }}&order={{ order }}&dir={{ dir }}&page={{ page_obj.next_page_number }}">Siguiente →</a>
+                <a href="{% querystring page=page_obj.next_page_number %}">Siguiente →</a>
             {% endif %}
         </div>
     {% endif %}
